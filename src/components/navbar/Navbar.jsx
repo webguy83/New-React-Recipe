@@ -5,8 +5,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
+import SearchBar from '../search/SearchBar';
 
-const pages = ['Home', 'Create', 'Search'];
+const pages = ['Home', 'Create'];
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Navbar() {
   return (
     <AppBar position='static'>
       <Container maxWidth='xl'>
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex' }}>
             {pages.map((page) => (
               <Button
@@ -29,6 +30,7 @@ export default function Navbar() {
               </Button>
             ))}
           </Box>
+          <SearchBar />
         </Toolbar>
       </Container>
     </AppBar>

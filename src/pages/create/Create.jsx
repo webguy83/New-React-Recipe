@@ -4,16 +4,35 @@ import TextField from '@mui/material/TextField';
 import { Typography, TextareaAutosize } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
+import { useFetch } from '../../hooks/useFetch';
+import { useNavigate } from 'react-router-dom';
 
 export default function Create() {
   const [title, setTitle] = useState('');
   const [method, setMethod] = useState('');
   const [cookingTime, setCookingTime] = useState('');
+  const [ingredients, setIngredients] = useState([]);
+  const { postData, data } = useFetch('http://localhost:3000/recipes', 'POST');
+  const navigate = useNavigate();
+
+  const defaultIngredients = ['sugar', 'salt', 'honey', 'butter', 'horse raddish'];
+
+  useEffect(() => {
+    if (data) {
+      navigate('/');
+    }
+  }, [data, navigate]);
 
   function submitForm(e) {
     e.preventDefault();
-    console.log(title, method, cookingTime);
+    postData({ title, method, ingredients, cookingTime: `${cookingTime} minutes` });
+  }
+
+  function addIngredients(_e, values) {
+    setIngredients(values);
   }
 
   return (
@@ -31,7 +50,7 @@ export default function Create() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '470px',
+          minHeight: '550px',
           justifyContent: 'space-between',
         }}
       >
@@ -49,6 +68,27 @@ export default function Create() {
           value={method}
           onChange={(e) => setMethod(e.target.value)}
         />
+        <Autocomplete
+          multiple
+          id='tags-filled'
+          options={defaultIngredients}
+          freeSolo
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => (
+              <Chip variant='outlined' label={option} {...getTagProps({ index })} />
+            ))
+          }
+          onChange={(e, val) => addIngredients(e, val)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant='outlined'
+              label='Add Ingredients'
+              value={ingredients}
+              placeholder='Add'
+            />
+          )}
+        />
         <TextField
           required
           label='Cooking time (min)'
@@ -59,7 +99,12 @@ export default function Create() {
           onChange={(e) => setCookingTime(e.target.value)}
           value={cookingTime}
         />
-        <Button type='submit' variant='contained' sx={{ alignSelf: 'center' }}>
+        <Button
+          disabled={!title || method.length < 100 || ingredients.length < 1 || !cookingTime}
+          type='submit'
+          variant='contained'
+          sx={{ alignSelf: 'center' }}
+        >
           Create Recipe
         </Button>
       </Container>
