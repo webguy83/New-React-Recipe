@@ -30,7 +30,12 @@ export default function RecipeList({ recipes }) {
             </Typography>
           </CardContent>
           <CardActions>
-            <Button onClick={() => navigate(`/recipe/${recipe.id}`)} size='small'>
+            <Button
+              variant='contained'
+              color='secondary'
+              onClick={() => navigate(`/recipe/${recipe.id}`)}
+              size='small'
+            >
               Cook More
             </Button>
           </CardActions>
