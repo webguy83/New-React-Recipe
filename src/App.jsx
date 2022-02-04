@@ -6,10 +6,11 @@ import Recipe from './pages/recipe/Recipe';
 import Search from './pages/search/Search';
 import Navbar from './components/navbar/Navbar';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 
 function App() {
   return (
-    <div className='App'>
+    <Box className='App' sx={{ bgcolor: 'background.default' }}>
       <BrowserRouter>
         <Navbar />
         <Container sx={{ marginTop: '20px' }}>
@@ -22,7 +23,7 @@ function App() {
           </Routes>
         </Container>
       </BrowserRouter>
-    </div>
+    </Box>
   );
 }
 

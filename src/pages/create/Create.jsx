@@ -4,31 +4,32 @@ import TextField from '@mui/material/TextField';
 import { Typography, TextareaAutosize } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
-import { useFetch } from '../../hooks/useFetch';
 import { useNavigate } from 'react-router-dom';
+import { addDoc, collection, db } from '../../firebase/config';
 
 export default function Create() {
   const [title, setTitle] = useState('');
   const [method, setMethod] = useState('');
   const [cookingTime, setCookingTime] = useState('');
   const [ingredients, setIngredients] = useState([]);
-  const { postData, data } = useFetch('http://localhost:3000/recipes', 'POST');
   const navigate = useNavigate();
 
   const defaultIngredients = ['sugar', 'salt', 'honey', 'butter', 'horse raddish'];
 
-  useEffect(() => {
-    if (data) {
-      navigate('/');
-    }
-  }, [data, navigate]);
-
   function submitForm(e) {
     e.preventDefault();
-    postData({ title, method, ingredients, cookingTime: `${cookingTime} minutes` });
+
+    addDoc(collection(db, 'recipes'), {
+      title,
+      method,
+      ingredients,
+      cookingTime: `${cookingTime} minutes`,
+    }).then(() => {
+      navigate('/');
+    });
   }
 
   function addIngredients(_e, values) {
@@ -36,12 +37,7 @@ export default function Create() {
   }
 
   return (
-    <Box
-      onSubmit={submitForm}
-      component='form'
-      autoComplete='off'
-      sx={{ backgroundColor: 'white', padding: '15px' }}
-    >
+    <Box onSubmit={submitForm} component='form' autoComplete='off' sx={{ padding: '15px' }}>
       <Typography variant='h4' gutterBottom sx={{ textAlign: 'center' }}>
         Create a new Recipe
       </Typography>
