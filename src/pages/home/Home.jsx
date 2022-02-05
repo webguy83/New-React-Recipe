@@ -2,7 +2,7 @@ import { Alert, CircularProgress } from '@mui/material';
 import './Home.css';
 import RecipeList from '../../components/recipeList/RecipeList';
 import { useEffect, useState } from 'react';
-import { db, collection, getDocs } from '../../firebase/config';
+import { db, onSnapshot, collection } from '../../firebase/config';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -11,12 +11,13 @@ export default function Home() {
 
   useEffect(() => {
     setIsPending(true);
-    const recipesCol = collection(db, 'recipes');
-    getDocs(recipesCol)
-      .then((recipeSnapshot) => {
+
+    const unSub = onSnapshot(
+      collection(db, 'recipes'),
+      (snapShot) => {
         setIsPending(false);
-        if (!recipeSnapshot.empty) {
-          const recipeList = recipeSnapshot.docs.map((doc) => {
+        if (!snapShot.empty) {
+          const recipeList = snapShot.docs.map((doc) => {
             return {
               id: doc.id,
               ...doc.data(),
@@ -26,10 +27,13 @@ export default function Home() {
         } else {
           setError('No recipes to load.');
         }
-      })
-      .catch((err) => {
+      },
+      (err) => {
         setError(err.message);
-      });
+        setIsPending(false);
+      }
+    );
+    return () => unSub();
   }, []);
 
   return (
